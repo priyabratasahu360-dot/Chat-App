@@ -2,7 +2,7 @@ A real time chat application built using Node.js, React.js, MongoDB and Express.
 This application uses socket.io which allow users to communicate in real time.
 
 Techstack i have used for the entire application listed below
-Frontend: html, tailwindcss(styling), daisyui(styling), react.js(library), axios(data fetching), tanstack-query(state-management)
+Frontend: html, tailwindcss(styling), daisyui(styling), react.js(library), axios(data fetching), Zustand(state-management)
 Backend: Node.js(JS runtime), express.js(framework), cloudinary(cloud storage), socket-io
 
 So, these are some of the library, framework or tools are used in this application. I have used more than just these so you can check "package.json" files to get full overview of the tools.
