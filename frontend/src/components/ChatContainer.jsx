@@ -40,8 +40,8 @@ export const ChatContainer = () => {
           ref={messageEndRef}
           className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}>
             <div className="chat-image avatar">
-              <div className="size-10 rounded-full border p-1">
-                <img src={message.senderId === authUser._id ? authUser.profilePicture || "/avatar.png" : selectedUser.profilPicture || "/avatar.png"} alt="Profile" />
+              <div className="size-10 rounded-full border">
+                <img src={message.senderId === authUser._id ? authUser.profilePicture || "/avatar.png" : selectedUser.profilPicture || "/avatar.png"} alt="Profile" className="object-cover rounded-full"/>
               </div>
             </div>
             <div className="chat-header mb-1">
@@ -49,7 +49,7 @@ export const ChatContainer = () => {
                 {formatMessageTime(message.createdAt)}
               </time>
             </div>
-            <div className="chat-bubble flex flex-col">
+            <div className="chat-bubble flex flex-col scroll">
               {message.image && (
                 <img src={message.image} alt="Attachment"
                 className="sm:max-w-[200px] rounded-md mb-2" />
