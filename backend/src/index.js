@@ -12,6 +12,7 @@ import { connectDb } from './lib/db.js';
 
 import authRoutes from './routes/auth.route.js';
 import messageRoutes from './routes/message.route.js';
+import groupRoutes from "./routes/group.route.js";
 
 import { app, server } from './lib/socket.js';
 
@@ -26,6 +27,7 @@ const PORT = process.env.PORT;
 
 app.use("/api/auth", authRoutes);
 app.use("/api/message", messageRoutes);
+app.use("/api/groups", groupRoutes)
 
 if(process.env.NODE_ENV === "production"){
     app.use(express.static(path.join(__dirname, "../frontend/dist")));

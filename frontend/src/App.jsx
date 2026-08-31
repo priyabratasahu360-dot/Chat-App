@@ -21,7 +21,7 @@ const App = () => {
     checkAuth();
   }, [checkAuth]);
 
-  console.log({authUser});
+  // console.log({authUser});
   if(isCheckingAuth && !authUser){
     return(
       <div className='flex items-center justify-center h-screen'>
@@ -30,9 +30,8 @@ const App = () => {
     )
   }
   return (
-    <div data-theme="dark">
+    <div data-theme="dark" className='font-serif'>
       <Navbar />
-
       <Routes>
         <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" /> }/>
         <Route path="/signup" element={!authUser ? <SignupPage /> : <Navigate to="/" />}/>

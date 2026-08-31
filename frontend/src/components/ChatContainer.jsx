@@ -5,61 +5,143 @@ import { MessageInput } from "./MessageInput";
 import { MessageSkeleton } from "./skeletons/MessageSkeleton";
 import { useAuthStore } from "../store/useAuthStore";
 import { formatMessageTime } from "../lib/utils";
+import { User } from "lucide-react";
 
 export const ChatContainer = () => {
-  const { messages, getMessages, isMessagesLoading, selectedUser, subscribeToMessages, unsubscribeFromMessages } = useChatStore();
-  const {authUser} = useAuthStore();
+  const {
+    messages,
+    getMessages,
+    isMessagesLoading,
+    selectedUser,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+  } = useChatStore();
+
+  const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 
   useEffect(() => {
     getMessages(selectedUser._id);
 
     subscribeToMessages();
+
     return () => unsubscribeFromMessages();
-  }, [selectedUser._id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
+  }, [
+    selectedUser._id,
+    getMessages,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+  ]);
 
   useEffect(() => {
-    if(messageEndRef.current && messages){
-      messageEndRef.current.scrollIntoView({behavior: "smooth"});
+    if (messageEndRef.current && messages) {
+      messageEndRef.current.scrollIntoView({
+        behavior: "smooth",
+      });
     }
-  }, [messages])
+  }, [messages]);
 
   if (isMessagesLoading) {
-    <div className="flex flex-1 flex-col overflow-auto">
-      <ChatHeader />
-      <MessageSkeleton />
-      <MessageInput />
-    </div>;
+    return (
+      <div className="h-full w-full flex flex-col bg-[#c0c0c0]">
+        <ChatHeader />
+
+        {/* Loading messages */}
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          <MessageSkeleton />
+        </div>
+
+        {/* Fixed bottom input */}
+        <div className="shrink-0 bg-[#c0c0c0] border-t-2 border-white">
+          <MessageInput />
+        </div>
+      </div>
+    );
   }
+
   return (
-    <div className="flex flex-1 flex-col overflow-auto">
-      <ChatHeader />
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+    <div className="h-full w-full min-w-0 flex flex-col bg-[#c0c0c0]">
+      {/* Chat Header */}
+      <div className="shrink-0">
+        <ChatHeader />
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 bg-[#008080]">
         {messages.map((message) => (
-          <div key={message._id}
-          ref={messageEndRef}
-          className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}>
-            <div className="chat-image avatar">
-              <div className="size-10 rounded-full border">
-                <img src={message.senderId === authUser._id ? authUser.profilePicture || "/avatar.png" : selectedUser.profilPicture || "/avatar.png"} alt="Profile" className="object-cover rounded-full"/>
+          <div
+            key={message._id}
+            ref={messageEndRef}
+            className={`flex items-end gap-2 min-w-0 ${
+              message.senderId === authUser._id
+                ? "justify-end"
+                : "justify-start"
+            }`}
+          >
+            {/* Other user's avatar */}
+            {message.senderId !== authUser._id && (
+              <div className="w-8 h-8 bg-[#c0c0c0] border-2 border-white border-r-black border-b-black shrink-0">
+                <img
+                  src={selectedUser.profilePicture || <User></User>}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
               </div>
-            </div>
-            <div className="chat-header mb-1">
-              <time className="text-xs opacity-50 ml-1">
+            )}
+
+            {/* Message wrapper */}
+            <div
+              className={`min-w-0 max-w-[70%] flex flex-col ${
+                message.senderId === authUser._id ? "items-end" : "items-start"
+              }`}
+            >
+              {/* Time */}
+              <time className="text-[10px] text-white mb-1">
                 {formatMessageTime(message.createdAt)}
               </time>
+
+              {/* Message bubble */}
+              <div
+                className={`min-w-0 max-w-full px-3 py-2 text-sm text-black border-2 break-words overflow-wrap-anywhere ${
+                  message.senderId === authUser._id
+                    ? "bg-[#dcdcdc] border-white border-r-black border-b-black"
+                    : "bg-white border-gray-600 border-t-black border-l-black"
+                }`}
+              >
+                {message.image && (
+                  <img
+                    src={message.image}
+                    alt="Attachment"
+                    className="max-w-full max-h-[300px] mb-2 border border-gray-500 object-contain"
+                  />
+                )}
+
+                {message.text && (
+                  <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
+                    {message.text}
+                  </p>
+                )}
+              </div>
             </div>
-            <div className="chat-bubble flex flex-col scroll">
-              {message.image && (
-                <img src={message.image} alt="Attachment"
-                className="sm:max-w-[200px] rounded-md mb-2" />
-              )}
-              {message.text && <p>{message.text}</p>}
-            </div>
+
+            {/* Own avatar */}
+            {message.senderId === authUser._id && (
+              <div className="w-8 h-8 bg-[#c0c0c0] border-2 border-white border-r-black border-b-black shrink-0">
+                <img
+                  src={authUser.profilePicture || "/avatar.png"}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
           </div>
         ))}
       </div>
-      <MessageInput />
+
+      {/* Message Input - ALWAYS AT BOTTOM */}
+      <div className="shrink-0 bg-[#c0c0c0] border-t-2 border-black">
+        <MessageInput />
+      </div>
     </div>
   );
 };

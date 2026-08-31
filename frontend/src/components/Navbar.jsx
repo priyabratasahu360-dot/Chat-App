@@ -1,48 +1,61 @@
 import { LogOut, MessageSquare, Settings, User } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Link } from "react-router-dom";
-
 export const Navbar = () => {
   const { logout, authUser } = useAuthStore();
   return (
-    <header className="bg-base-100 border-b border-base-300 fixed w-full top-0 z-40 backdrop-blur-lg bg-base-100/80">
-      <div className="container mx-auto px-4 h-16">
+    <header className="fixed top-0 left-0 w-full z-40 bg-[#c0c0c0] border-b-2 border-black">
+      {" "}
+      <div className="h-14 px-2">
+        {" "}
         <div className="flex items-center justify-between h-full">
-          <div className="flex items-center gap-8">
-            <Link
-              to="/"
-              className="flex items-center gap-2.5 hover:opacity-80 transition-all"
-            >
-              <div className="size-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                <MessageSquare className="size-5 text-primary" />
-              </div>
-              <h1 className="text-lg font-bold">Chat App</h1>
-            </Link>
-          </div>
-          <div className="flex items-center gap-2">
+          {" "}
+          {/* Logo */}{" "}
+          <Link to="/" className="flex items-center gap-2 px-2 py-1">
+            {" "}
+            <div className="w-8 h-8 bg-[#c0c0c0] flex items-center justify-center border-2 border-white border-r-black border-b-black">
+              {" "}
+              <MessageSquare className="size-5 text-[#000080]" />{" "}
+            </div>{" "}
+            <h1 className="text-base font-bold text-black"> Chat App </h1>{" "}
+          </Link>{" "}
+          {/* Right Side */}{" "}
+          <div className="flex items-center gap-1">
+            {" "}
+            {/* Settings */}{" "}
             <Link
               to="/settings"
-              className={`btn btn-sm gap-2 transition-colors`}
+              className="flex items-center gap-2 bg-[#c0c0c0] text-black px-3 py-1.5 text-sm font-bold border-2 border-white border-r-black border-b-black active:border-black active:border-r-white active:border-b-white"
             >
-              <Settings className="size-4" />
-              <span className="hidden sm:inline">Settings</span>
-            </Link>
+              {" "}
+              <Settings className="size-4" />{" "}
+              <span className="hidden sm:inline">Settings</span>{" "}
+            </Link>{" "}
+            {/* Profile + Logout */}{" "}
             {authUser && (
               <>
-                <Link to={"/profile"} className={`btn btn-sm gap-2`}>
-                  <User className="size-5" />
-                  <span className="hidden sm:inline">Profile</span>
-                </Link>
-
-                <button className="flex gap-2 items-center" onClick={logout}>
-                  <LogOut className="size-5" />
-                  <span className="hidden sm:inline">Logout</span>
-                </button>
+                {" "}
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2 bg-[#c0c0c0] text-black px-3 py-1.5 text-sm font-bold border-2 border-white border-r-black border-b-black active:border-black active:border-r-white active:border-b-white"
+                >
+                  {" "}
+                  <User className="size-4" />{" "}
+                  <span className="hidden sm:inline"> Profile </span>{" "}
+                </Link>{" "}
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-2 bg-[#c0c0c0] text-black px-3 py-1.5 text-sm font-bold border-2 border-white border-r-black border-b-black active:border-black active:border-r-white active:border-b-white"
+                >
+                  {" "}
+                  <LogOut className="size-4" />{" "}
+                  <span className="hidden sm:inline"> Logout </span>{" "}
+                </button>{" "}
               </>
-            )}
-          </div>
-        </div>
-      </div>
+            )}{" "}
+          </div>{" "}
+        </div>{" "}
+      </div>{" "}
     </header>
   );
 };
