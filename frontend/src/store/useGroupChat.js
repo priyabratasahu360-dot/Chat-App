@@ -26,7 +26,18 @@ export const useGroupChat = create((set, get) => ({
         set({isGroupsLoading: true});
         try{
             const res = await axiosInstance.post("/groups", groupData);
-            set({groups: res.data});
+
+            const groupObj = res.data;
+
+            const structuredGroup = {
+            _id: `temp-${Date.now()}`, // unique tracking ID
+            role: "admin",
+            groupId: groupObj       // group metadata
+        };
+
+            const currentGroups = get().groups;
+            const groupList = Array.isArray(currentGroups) ? currentGroups : [];
+            set({groups: [...groupList, structuredGroup]});
             toast.success("Group created");
         }
         catch(error){
@@ -58,7 +69,8 @@ export const useGroupChat = create((set, get) => ({
             set({messages: [...messages, res.data]});
         }
         catch(error){
-            toast.error(error.response.data.message);
+            console.log("Error in sendGroupMessage: ", error);
+            toast.error(error.response?.data?.message);
         }
     },
 
@@ -74,7 +86,7 @@ export const useGroupChat = create((set, get) => ({
             `/groups/${selectedGroup._id}/messages`
         );
 
-        set({ messages: res.data });
+        set({ messages: res.data});
     }
     catch (error) {
         toast.error(error.response?.data?.message || "Failed to load messages");

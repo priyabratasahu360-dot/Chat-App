@@ -6,6 +6,7 @@ import { MessageSkeleton } from "./skeletons/MessageSkeleton";
 import { formatMessageTime } from "../lib/utils";
 
 import { GroupHeader } from "./GroupHeader";
+import { GroupMessageInput } from "./GroupMessageInput";
 
 export const GroupChatContainer = () => {
   const {
@@ -73,7 +74,7 @@ export const GroupChatContainer = () => {
         {/* Input */}
 
         <div className="shrink-0 bg-[#c0c0c0] border-t-2 border-black">
-          <MessageInput />
+          <GroupMessageInput />
         </div>
       </div>
     );
@@ -97,7 +98,7 @@ export const GroupChatContainer = () => {
             ================================= */}
 
       <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 bg-[#008080]">
-        {messages?.chats?.map((message) => {
+        {messages?.map((message) => {
           const isOwnMessage = message.senderId === authUser._id;
 
           return (
@@ -113,7 +114,7 @@ export const GroupChatContainer = () => {
               {!isOwnMessage && (
                 <div className="w-8 h-8 shrink-0 bg-[#c0c0c0] border-2 border-white border-r-black border-b-black">
                   <img
-                    src={message.sender?.profilePicture || "/avatar.png"}
+                    src={message.senderId?.profilePicture || "/avatar.png"}
                     alt="Profile"
                     className="w-full h-full object-cover"
                   />
@@ -131,7 +132,8 @@ export const GroupChatContainer = () => {
 
                 {!isOwnMessage && (
                   <span className="text-[11px] font-bold text-white mb-1">
-                    {message.sender?.fullname || message.senderName || "User"}
+                    {message.senderId?.fullname || "User"}
+                    {console.log(message)}
                   </span>
                 )}
 
@@ -165,9 +167,9 @@ export const GroupChatContainer = () => {
 
                   {/* Text */}
 
-                  {message.text && (
+                  {message.content && (
                     <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
-                      {message.text}
+                      {message.content}
                     </p>
                   )}
                 </div>
@@ -193,7 +195,9 @@ export const GroupChatContainer = () => {
                 INPUT to add...
             ================================= */}
 
-      
+      <div className="border-black bg-[#c0c0c0] border-t-2">
+        <GroupMessageInput />
+      </div>
     </div>
   );
 };

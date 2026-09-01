@@ -53,8 +53,8 @@ console.log(groups)
   // FILTER GROUPS
   // =========================
 
-  const filteredGroups = groups?.group?.filter((g) =>
-    g.groupId.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    const filteredGroups = groups?.filter((g) =>
+      g.groupId.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
   console.log("filtered groups: ", filteredGroups);
 
@@ -188,7 +188,10 @@ console.log(groups)
                     : "Search groups..."
                 }
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                }
+                }
                 className="w-full bg-white text-black text-sm pl-8 pr-8 py-2 border-2 border-gray-600 border-t-black border-l-black outline-none"
               />
 
