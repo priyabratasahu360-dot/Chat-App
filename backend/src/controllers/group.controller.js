@@ -1,6 +1,8 @@
 import Group from "../models/Group.model.js";
 import GroupChat from "../models/GroupChat.model.js";
 import GroupMember from "../models/GroupMember.model.js";
+import { io } from "../lib/socket.js";
+import User from "../models/user.model.js";
 
 
 export const createGroup = async(req, res) => {
@@ -27,7 +29,7 @@ export const createGroup = async(req, res) => {
                 if(userId !== creatorId){ //prevents adding admin twice
                     groupMembers.push({
                         groupId: newGroup._id,
-                        userId: creatorId,
+                        userId,
                         role: "member"
                     });
                 }
@@ -36,7 +38,7 @@ export const createGroup = async(req, res) => {
 
         await GroupMember.insertMany(groupMembers);
 
-        res.status(201).json({message: "Group created", group: newGroup});
+        res.status(201).json(newGroup);
     }
     catch(error){
         console.log("Error in createGroup: ", error.message);
@@ -50,7 +52,7 @@ export const allGroup = async(req, res) => {
 
         const groups = await GroupMember.find({userId}).populate("groupId");
 
-        res.status(200).json({message: "all groups", group: groups});
+        res.status(200).json(groups);
     }
     catch(error){
         console.log("Error in allGroup: ", error.message);
@@ -64,7 +66,7 @@ export const gropuDetail = async(req, res) => {
 
         const group = await Group.findById(groupId);
 
-        res.status(200).json({message: "Group details", group: group});
+        res.status(200).json(group);
     }
     catch(error){
         console.log("Error in groupDetil: ", error.message);
@@ -81,7 +83,7 @@ export const updateGroup = async(req, res) => {
             description
         }, {returnDocument: "after"});
 
-        res.status(200).json({message: "updated group", group: group});
+        res.status(200).json(group);
     }
     catch(error){
         console.log("Error in updateGroup: ", error.message);
@@ -102,7 +104,7 @@ export const groupMembers = async(req, res) => {
 
         const members = await GroupMember.find({groupId}).populate("userId", "fullname email profilePicture");
 
-        res.status(200).json({message: "All group members", members: members});
+        res.status(200).json(members);
     }
     catch(error){
         console.log("Error in groupMembers: ", error.message);
@@ -134,7 +136,7 @@ export const addNewUser = async(req, res) => {
             role: "member"
         })
 
-        res.status(201).json({message: "A new user added", newUser});
+        res.status(201).json(newUser);
     }
     catch(error){
         console.log("Error in addNewUser: ", error.message);
@@ -155,7 +157,7 @@ export const removeUser = async(req, res) => {
 
         const removed = await GroupMember.deleteOne({groupId, userId: removedUserId}).populate("userId", "fullname");
 
-        res.status(200).json({message: "User Removed", removed: removed});
+        res.status(200).json(removed);
     }
     catch(error){
         console.log("Error in removeUser: ", error.message);
@@ -167,9 +169,9 @@ export const chatHistory = async(req, res) => {
     try{
         const groupId = req.params.groupId;
 
-        const chats = await GroupChat.find({groupId});
+        const chats = await GroupChat.find({groupId}).populate("senderId", "fullname profilePicture");
 
-        res.status(200).json({message: "chat history", chats: chats});
+        res.status(200).json(chats);
     }
     catch(error){
         console.log("Error in chatHistory: ", error.message);
@@ -190,10 +192,13 @@ export const sendGroupChats = async(req, res) => {
             content: text
         });
 
-        //broadcast live to online users
-        io.to(groupId).emit("receive_group_message", newMessage);
+         const populatedMessage = await GroupChat.findById(newMessage._id)
+            .populate("senderId", "fullname profilePicture");
 
-        res.status(201).json({message: "You sent a new message", chat: newMessage})
+        //broadcast live to online users
+        io.to(groupId).emit("receive_group_message", populatedMessage);
+
+        res.status(201).json(populatedMessage);
     }
     catch(error){
         console.log("Error in sendGroupChats: ", error.message);
