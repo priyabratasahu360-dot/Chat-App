@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
-import { Camera, User, Mail } from "lucide-react";
+import { Camera, User, Mail, CircleUserRound} from "lucide-react";
 
 export const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
@@ -58,7 +58,7 @@ export const ProfilePage = () => {
                 <div className="w-32 h-32 bg-white border-2 border-gray-600 border-t-black border-l-black p-1">
                   <img
                     src={
-                      selectedImage || authUser.profilePicture || "/avatar.png"
+                      selectedImage || authUser.profilePicture || <CircleUserRound className="size-8"/>
                     }
                     alt="profile"
                     className="w-full h-full object-cover"

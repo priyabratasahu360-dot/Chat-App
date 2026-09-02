@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useGroupChat } from "../store/useGroupChat";
 import { useAuthStore } from "../store/useAuthStore";
@@ -7,8 +7,11 @@ import { formatMessageTime } from "../lib/utils";
 
 import { GroupHeader } from "./GroupHeader";
 import { GroupMessageInput } from "./GroupMessageInput";
+import { GroupInfo } from "./GroupInfo";
 
 export const GroupChatContainer = () => {
+  const [showGroupInfo, setShowGroupInfo] = useState(false);
+
   const {
     messages,
     getGroupMessages,
@@ -18,6 +21,8 @@ export const GroupChatContainer = () => {
   } = useGroupChat();
   console.log(messages);
   const { authUser } = useAuthStore();
+
+  const {getUsers} = useGroupChat();
 
   const messageEndRef = useRef(null);
 
@@ -49,6 +54,12 @@ export const GroupChatContainer = () => {
 
   if (!selectedGroup) {
     return null;
+  }
+
+  if(showGroupInfo){
+    return(
+      <GroupInfo group={selectedGroup} onClose={() => setShowGroupInfo(false)}/>
+    )
   }
 
   // ==============================
@@ -90,6 +101,9 @@ export const GroupChatContainer = () => {
         <GroupHeader
           group={selectedGroup}
           onClose={() => setSelectedGroup(null)}
+          onGroupClick={() => {
+            getUsers();
+            setShowGroupInfo(true)}}
         />
       </div>
 
@@ -192,7 +206,7 @@ export const GroupChatContainer = () => {
       </div>
 
       {/* =================================
-                INPUT to add...
+                INPUT
             ================================= */}
 
       <div className="border-black bg-[#c0c0c0] border-t-2">

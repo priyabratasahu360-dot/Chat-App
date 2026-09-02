@@ -3,6 +3,7 @@ import { useChatStore } from "../store/useChatStore";
 import { SidebarSkeleton } from "./skeletons/SidebarSkeleton";
 import {
   User,
+  CircleUserRound,
   Users,
   Plus,
   Search,
@@ -252,13 +253,16 @@ console.log(groups)
                 >
                   {/* Avatar */}
 
-                  <div className="relative shrink-0">
-                    <div className="w-11 h-11 bg-white border-2 border-gray-600 border-t-black border-l-black">
-                      <img
-                        src={user.profilePicture || "/avatar.png"}
+                  <div className="relative shrink-0 bg-black">
+                    <div className="w-11 h-11 bg-white border-2 border-gray-600 border-t-black border-l-black flex justify-center items-center">
+                      {user.profilePicture ?
+                      (<img
+                        src={user.profilePicture}
                         alt={user.fullname}
                         className="w-full h-full object-cover"
-                      />
+                      />):
+                      <CircleUserRound className="object-cover bg-[#000080] text-white w-full h-full"/>
+                      }
                     </div>
 
                     {/* Online indicator */}
