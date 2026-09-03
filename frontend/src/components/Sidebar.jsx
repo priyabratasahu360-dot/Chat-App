@@ -30,7 +30,7 @@ export const Sidebar = () => {
   const [selectedMembers, setSelectedMembers] = useState([]);
   
 
-console.log(groups)
+// console.log(groups)
   useEffect(() => {
     getUsers();
   }, [getUsers]);
@@ -57,7 +57,7 @@ console.log(groups)
     const filteredGroups = groups?.filter((g) =>
       g.groupId.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
-  console.log("filtered groups: ", filteredGroups);
+  // console.log("filtered groups: ", filteredGroups);
 
   // =========================
   // GROUP MEMBERS

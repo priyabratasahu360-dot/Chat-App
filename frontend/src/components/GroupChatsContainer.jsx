@@ -18,8 +18,10 @@ export const GroupChatContainer = () => {
     isMessageLoading,
     selectedGroup,
     setSelectedGroup,
+    subscribeToGroupChat,
+    unsubscribeFromGroupChat
   } = useGroupChat();
-  console.log(messages);
+  // console.log(messages);
   const { authUser } = useAuthStore();
 
   const {getUsers} = useGroupChat();
@@ -34,7 +36,9 @@ export const GroupChatContainer = () => {
     if (!selectedGroup) return;
 
     getGroupMessages();
-  }, [selectedGroup, getGroupMessages]);
+    subscribeToGroupChat();
+    return () => unsubscribeFromGroupChat();
+  }, [selectedGroup, getGroupMessages, subscribeToGroupChat, unsubscribeFromGroupChat]);
 
   // ==============================
   // SCROLL TO BOTTOM
@@ -113,7 +117,7 @@ export const GroupChatContainer = () => {
 
       <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 bg-[#008080]">
         {messages?.map((message) => {
-          const isOwnMessage = message.senderId === authUser._id;
+          const isOwnMessage = message.senderId._id === authUser._id;
 
           return (
             <div
@@ -136,7 +140,6 @@ export const GroupChatContainer = () => {
               )}
 
               {/* MESSAGE */}
-
               <div
                 className={`min-w-0 max-w-[70%] flex flex-col ${
                   isOwnMessage ? "items-end" : "items-start"
@@ -144,23 +147,22 @@ export const GroupChatContainer = () => {
               >
                 {/* Sender name */}
 
-                {!isOwnMessage && (
+                {isOwnMessage ? (
                   <span className="text-[11px] font-bold text-white mb-1">
-                    {message.senderId?.fullname || "User"}
-                    {console.log(message)}
+                    {message.senderId?.fullname}
                   </span>
-                )}
+                ): 
+                <span className="text-[11px] font-bold text-white mb-1">
+                    {message.senderId?.fullname}
+                  </span>
+                }
 
-                {/* Time */}
-
-                <time className="text-[10px] text-white mb-1">
-                  {formatMessageTime(message.createdAt)}
-                </time>
+                
 
                 {/* Bubble */}
 
                 <div
-                  className={`min-w-0 max-w-full px-3 py-2 text-sm text-black border-2 break-words ${
+                  className={`relative min-w-0 max-w-full pl-2 pr-14 pt-2 pb-4 text-sm text-black border-2 break-words ${
                     isOwnMessage
                       ? "bg-[#dcdcdc] border-white border-r-black border-b-black"
                       : "bg-white border-gray-600 border-t-black border-l-black"
@@ -169,23 +171,18 @@ export const GroupChatContainer = () => {
                     overflowWrap: "anywhere",
                   }}
                 >
-                  {/* Image */}
-
-                  {message.image && (
-                    <img
-                      src={message.image}
-                      alt="Attachment"
-                      className="max-w-full max-h-[300px] mb-2 border border-gray-500 object-contain"
-                    />
-                  )}
 
                   {/* Text */}
-
                   {message.content && (
                     <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
                       {message.content}
                     </p>
                   )}
+                  {/* Time */}
+
+                <time className="absolute  right-1 bottom-0.5 text-[10px] text-black">
+                  {formatMessageTime(message.createdAt)}
+                </time>
                 </div>
               </div>
 

@@ -117,26 +117,37 @@ export const addNewUser = async(req, res) => {
         const groupId = req.params.groupId;
         const userId = req.user.id; //loggedIn user's id
 
-        const {addedUserId} = req.body;
+        const {addUserIds} = req.body; //expects array of users
         
+        //check for admin
         const isAdmin = await GroupMember.findOne({groupId, userId});
-        if(isAdmin.role !== "admin"){
+        if(!isAdmin || isAdmin.role !== "admin"){
             return res.status(403).json({message: "Only Admins of this group can add members"});
         }
+        //finds users who are already members
+        const existingMember = await GroupMember.find({groupId, userId: {$in: addUserIds}});
 
-        const existingMember = await GroupMember.findOne({groupId, userId:addedUserId});
+            const existingUserIds = existingMember.map((member) => member.userId.toString());
+            
+            //remove users who are already member from passed ids
+            const newUserIds = addUserIds.filter(
+                (id) => !existingUserIds.includes(id.toString())
+            )
+        
 
-        if(existingMember){
-            return res.status(409).json({message: "User already added", existingMember});
+        if(newUserIds.length === 0){
+            return res.status(409).json({message: "All selected Users already added", existingMember});
         }
 
-        const newUser = await GroupMember.create({
+        const membersToInsert = newUserIds.map((id) => ({
             groupId,
-            userId: addedUserId,
+            userId: id,
             role: "member"
-        })
+        }));
 
-        res.status(201).json(newUser);
+        const newMembers = await GroupMember.insertMany(membersToInsert)
+
+        res.status(201).json(newMembers);
     }
     catch(error){
         console.log("Error in addNewUser: ", error.message);

@@ -25,7 +25,7 @@ router.put("/:groupId",isAdmin, updateGroup); // update group info like name or 
 
 //member management routes
 router.get("/:groupId/members", groupMembers) //get all members of the group
-router.post("/:groupId/members", isAdmin, addNewUser);//add new user to group
+router.post("/:groupId/members", isAdmin, addNewUser);//add new users to group
 router.delete("/:groupId/members/:userId", isAdmin, removeUser);// delete a user from group
 
 //messaging routes

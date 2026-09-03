@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
+import { useAuthStore } from "./useAuthStore";
 
 export const useGroupChat = create((set, get) => ({
     groupUsers: [],
@@ -63,10 +64,9 @@ export const useGroupChat = create((set, get) => ({
     },
 
     sendGroupMessages: async(messageData) => {
-        const {selectedGroup, messages} = get();
+        const {selectedGroup} = get();
         try{
-            const res = await axiosInstance.post(`/groups/${selectedGroup._id}/messages`, messageData);
-            set({messages: [...messages, res.data]});
+            await axiosInstance.post(`/groups/${selectedGroup._id}/messages`, messageData);
         }
         catch(error){
             console.log("Error in sendGroupMessage: ", error);
@@ -95,6 +95,61 @@ export const useGroupChat = create((set, get) => ({
         set({ isMessageLoading: false });
     }
     },
+
+    addGroupMember: async(memberIds) => {
+        try{
+        const {selectedGroup} = get();
+            const res = await axiosInstance.post(`/groups/${selectedGroup._id}/members`, {addUserIds: memberIds});
+            set({groupUsers: [...get().groupUsers, res.data]})
+        }
+        catch(error){
+            toast.error(error.response?.data?.message)
+        }
+    },
+
+    removeGroupMember: async(deleteUserId) => {
+        try{
+            const {selectedGroup} = get();
+            if(!selectedGroup) return;
+
+            await axiosInstance.delete(`/groups/${selectedGroup._id}/members/${deleteUserId}`);   
+            toast.success("Member removed");
+        }
+        catch(error){
+            toast.error(error.response?.data?.message || "Failed to remove member");
+        }
+    },
+
+    subscribeToGroupChat: () => {
+        try{
+            const {selectedGroup} = get();
+            if(!selectedGroup) return;
+
+            const socket = useAuthStore.getState().socket;
+            
+            //join group room
+            socket.emit("join_group", selectedGroup._id);
+
+            //listen for new messages
+            socket.on("receive_group_message", (newMessage) => {
+                // console.log("New group message: ", newMessage);
+
+                set({messages: [...get().messages, newMessage]});
+            });
+        }
+        catch(error){
+            toast.error(error.response?.data?.message);
+        }
+    },
+
+    unsubscribeFromGroupChat: () => {
+        const {selectedGroup} = get();
+            const socket = useAuthStore.getState().socket;
+            if(selectedGroup){
+                socket.emit("leave_group", selectedGroup._id);
+            }
+            socket.off("receive_group_message");
+        },
     setSelectedGroup: (selectedGroup) => {
         //selectedGroup format
         {/*
