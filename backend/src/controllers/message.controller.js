@@ -2,6 +2,7 @@ import cloudinary from "../lib/cloudinary.js";
 import { getReceiversSocketId, io } from "../lib/socket.js";
 import Message from "../models/message.model.js";
 import User from "../models/user.model.js";
+import { emitNotificationEvent } from "../notification/notificationClient.js";
 
 export const getUsersForSidebar = async(req, res) => {
     try{
@@ -55,6 +56,23 @@ export const sendMessage = async(req, res) => {
         });
 
         await newMessage.save();
+
+        const senderData = await User.findById(senderId).select("-password");
+
+        //emit event to notification engine
+        await emitNotificationEvent({
+            eventId: `chat_msg_${newMessage._id.toString()}`, //must be unique
+            type: "message.created", //or chat.message_sent
+            source: "chat-app",
+            senderId: senderId.toString(),
+            recipientId: receiverId.toString(),
+            timestamp: new Date().toISOString(),
+            data: {
+                messageId: newMessage._id.toString(),
+                text,
+                senderData
+            }
+        })
 
         const receiverSocketId = getReceiversSocketId(receiverId);
         if(receiverSocketId){

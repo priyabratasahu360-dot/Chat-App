@@ -22,6 +22,12 @@ export const Navbar = () => {
           {/* Right Side */}{" "}
           <div className="flex items-center gap-1">
             {" "}
+            {/* Notification Bell icon */}
+            <Link 
+            to="/notifications"
+            className="flex items-center gap-2 bg-gray-600 text-black px-3 py-1.5 text-sm font-bold border-2 border-white border-r-black border-b-black active:border-black active:border-r-white active:border-b-white">
+            🔔
+            </Link>
             {/* Settings */}{" "}
             <Link
               to="/settings"
