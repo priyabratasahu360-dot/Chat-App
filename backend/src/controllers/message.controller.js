@@ -62,7 +62,7 @@ export const sendMessage = async(req, res) => {
         //emit event to notification engine
         await emitNotificationEvent({
             eventId: `chat_msg_${newMessage._id.toString()}`, //must be unique
-            type: "message.created", //or chat.message_sent
+            type: "chat.message.created",
             source: "chat-app",
             senderId: senderId.toString(),
             recipientId: receiverId.toString(),
@@ -70,7 +70,7 @@ export const sendMessage = async(req, res) => {
             data: {
                 messageId: newMessage._id.toString(),
                 text,
-                senderData
+                senderName: senderData.fullname
             }
         })
 

@@ -2,7 +2,7 @@ import { useNotificationStore } from "../store/useNotificationStore";
 
 export const NotificationsPage = () => {
     const { notifications, unreadCount, markAsRead, isNotificationsLoading } = useNotificationStore();
-
+    // console.log(notifications)
     if (isNotificationsLoading) {
         return <div className="p-8">Loading notifications...</div>;
     }
