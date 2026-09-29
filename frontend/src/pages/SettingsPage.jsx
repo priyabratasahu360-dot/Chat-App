@@ -7,16 +7,25 @@ import {
   Info
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useNotificationStore } from "../store/useNotificationStore";
+import { useAuthStore } from "../store/useAuthStore";
+import { useEffect } from "react";
 
 export const SettingsPage = () => {
+  const {authUser} = useAuthStore();
+  const {preferences, setNotificationPreferences, getNotificationPreferences} = useNotificationStore();
+
+  useEffect(() => {
+    if(!authUser) return;
+    
+    getNotificationPreferences(authUser._id);
+  }, [authUser._id, getNotificationPreferences]);
+
   return (
     <div className="min-h-screen pt-16 bg-[#008080]">
-
       <div className="max-w-2xl mx-auto p-4 py-8">
-
         {/* Retro Window */}
         <div className="bg-[#c0c0c0] border-2 border-white shadow-[4px_4px_0px_#000]">
-
           {/* Title Bar */}
           <div className="bg-[#000080] text-white px-2 py-1 flex items-center justify-between">
 
@@ -82,7 +91,6 @@ export const SettingsPage = () => {
 
               {/* Notifications */}
               <div className="border-2 border-gray-600 border-t-black border-l-black bg-[#d4d0c8]">
-
                 <div className="bg-[#000080] text-white px-3 py-1 flex items-center gap-2">
                   <Bell className="size-4" />
                   <span className="font-bold text-sm">
@@ -90,29 +98,80 @@ export const SettingsPage = () => {
                   </span>
                 </div>
 
-                <div className="p-4 space-y-3">
-
+                <div className="p-4 border-b-2 border-gray-500 bg-[#e4e0d8]">
                   <div className="flex items-center justify-between">
-
                     <div>
-                      <p className="font-bold text-sm text-black">
-                        Message Notifications
-                      </p>
-
-                      <p className="text-xs text-gray-700">
-                        Show notifications when you receive messages (Unavailable)
-                      </p>
+                      <p className="text-xs text-black font-bold">Disable ALL alerts</p>
                     </div>
-
                     <input
                       type="checkbox"
-                      defaultChecked
-                      className="w-4 h-4 accent-[#000080]"
-                      disabled
+                      checked={!!preferences?.notificationsEnabled}
+                      onChange={() => setNotificationPreferences(authUser?._id, "notificationsEnabled")}
+                      className="w-5 h-5 accent-[#000080]"
                     />
-
                   </div>
+                </div>
+              {/* In-app notification */}
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-bold text-sm text-black">
+                        In-app Notifications
+                      </p>
+                      <p className="text-xs text-gray-700">
+                        Show notifications when you receive messages
+                      </p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={!!preferences?.inApp}
+                      disabled={!preferences?.notificationsEnabled}
+                      onChange={() => setNotificationPreferences(authUser._id, "inApp")}
+                      className="w-4 h-4 accent-[#000080]"
+                    />
+                  </div>
+                </div>
 
+                {/* Browser push notification */}
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-bold text-sm text-black">
+                        Push Notifications(Not available)
+                      </p>
+                      <p className="text-xs text-gray-700">
+                        Messages sent to your system even after you closed your browser tab
+                      </p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={!!preferences?.push}
+                      disabled
+                      onChange={() => setNotificationPreferences(authUser._id, "push")}
+                      className="w-4 h-4 accent-[#000080]"
+                    />
+                  </div>
+                </div>
+
+                {/* Email notification */}
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-bold text-sm text-black">
+                        Email Notifications(Not available)
+                      </p>
+                      <p className="text-xs text-gray-700">
+                        Get notifications in your mail inbox
+                      </p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={!!preferences?.email}
+                      disabled
+                      onChange={() => setNotificationPreferences(authUser._id, "email")}
+                      className="w-4 h-4 accent-[#000080]"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -232,8 +291,7 @@ export const SettingsPage = () => {
           </div>
 
           {/* Status Bar */}
-          <div className="border-t-2 border-gray-500 px-2 py-1 text-xs text-black flex justify-between">
-            <span>Ready</span>
+          <div className="border-t-2 border-gray-500 px-2 py-1 text-xs text-black flex">
             <span>Chat App v1.0</span>
           </div>
 

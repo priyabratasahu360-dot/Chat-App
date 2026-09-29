@@ -8,6 +8,12 @@ const NOTIFICATION_WS_URL = "ws://localhost:5001";
 export const useNotificationStore = create((set, get) => ({
     notifications: [],
     unreadCount: 0,
+    preferences: {
+        notificationsEnabled: true,
+        inApp: true,
+        email: false,
+        push: false
+    },
     isNotificationsLoading: false,
     ws: null,
 
@@ -67,6 +73,54 @@ export const useNotificationStore = create((set, get) => ({
 
         ws.onclose = () => {
             set({ws: null});
+        }
+    },
+
+    getNotificationPreferences: async(userId) => {
+        if(!userId) return;
+        try{
+            const res = await axios.get(`${NOTIFICATION_ENGINE_URL}/api/preferences/${userId}`);
+            if(res.data){
+                set({preferences: {
+                    notificationsEnabled: res.data.notificationsEnabled ?? true,
+                    inApp: res.data.channels?.inApp ?? true,
+                    email: res.data.channels?.inApp ?? false,
+                    push: res.data.channels?.inApp ?? false,
+                }});
+            }
+        }
+        catch(error){
+            console.error("Failed to fetch preferences: ", error);
+        }
+    },
+
+    setNotificationPreferences: async(userId, channel) => {
+        if(!userId) return;
+        const currentPreferences = get().preferences;
+        const updatedPreferences ={
+            ...currentPreferences, [channel]: !currentPreferences[channel]
+        }
+
+        set({preferences: updatedPreferences});
+
+        const payload = {
+            userId,
+            notificationsEnabled: updatedPreferences.notificationsEnabled,
+            channels: {
+                inApp: updatedPreferences.inApp,
+                email: updatedPreferences.email,
+                push: updatedPreferences.push
+            },
+            mutedSources: [],
+            mutedTypes: []
+        }
+        try{
+            await axios.put(`${NOTIFICATION_ENGINE_URL}/api/preferences/${userId}`, payload);
+        }
+        catch(error){
+            console.error("Failed to set preferences: ", error);
+            toast.error("Something went wrong");
+            set({preferences: currentPreferences})
         }
     },
 
