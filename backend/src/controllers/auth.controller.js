@@ -1,18 +1,20 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/user.model.js';
 import cloudinary from '../lib/cloudinary.js';
-
 import { generateToken } from '../lib/utils.js';
+import {z} from "zod";
+import { signupSchema, loginSchema } from '../schemas/auth.schemas.js';
+import { updateProfileImageSchema } from '../schemas/profile.schemas.js';
 
 export const signup = async(req, res) => {
-    const {email, fullname, password} = req.body;
+    const validation = signupSchema.safeParse(req.body);
+    if(!validation.success){
+        const flattened = z.flattenError(validation.error);
+        return res.status(400).json({message: flattened.fieldErrors});
+    }
+    const {fullname, email, password} = validation.data;
+
     try{
-        if(!fullname || !email || !password){
-            return res.status(400).json({message: "All fields are reequired"});
-        }
-        if(password.length < 6){
-            return res.status(400).json({message: "Password must be atleast 6 character"});
-        }
 
         const user = await User.findOne({email});
         if(user){
@@ -48,7 +50,14 @@ export const signup = async(req, res) => {
     }
 }
 export const login = async(req, res) => {
-    const {email, password} = req.body;
+    const validation = loginSchema.safeParse(req.body);
+
+    if(!validation.success){
+        const flattened = z.flattenError(validation.error)
+        return res.status(400).json({message: flattened.fieldErrors})
+    }
+
+    const {email, password} = validation.data;
     try{
         if(!email || !password){
             res.status(400).json({message: "All fields are required"});
@@ -89,12 +98,16 @@ export const logout = (req, res) => {
 }
 
 export const updateProfile = async(req, res) => {
+    const validation = updateProfileImageSchema.safeParse(req.body);
+
+    if(!validation.success){
+        const flattened = z.flattenError(validation.error);
+        return res.status(400).json({message: flattened.fieldErrors});
+    }
+    const {profilePicture} = validation.data;
+    const userId = req.user._id;
+
     try{
-        const {profilePicture} = req.body;
-        const userId = req.user._id;
-        if(!profilePicture){
-            return res.status(400).json({message: "Profile picture is required"});
-        }
 
         const uploadRes = await cloudinary.uploader.upload(profilePicture); // gives a response
         const updatedUser = await User.findByIdAndUpdate(userId, {profilePicture: uploadRes.secure_url}, {returnDocument: 'after'});

@@ -38,7 +38,22 @@ export const useAuthStore = create((set, get) => ({
             get().connectSocket();
         }
         catch(error){
-            toast.error(error.response.data.message);
+            const errorMessages = error.response?.data?.message;
+
+            if(errorMessages && typeof errorMessages === "object"){
+                const allErrors = Object.values(errorMessages);
+
+                const firstError = allErrors.find((arr) => Array.isArray(arr) && arr.length > 0)?.[0];
+                if(firstError){
+                    toast.error(firstError);
+                }
+                else{
+                    toast.error("An unexpected validation error occured");
+                }
+            }
+            else{
+                toast.error(error.response?.data?.message || "Failed to create acc please try again later");
+            }
         }
         finally{
             set({isSigningUp: false});
@@ -54,8 +69,23 @@ export const useAuthStore = create((set, get) => ({
 
             get().connectSocket();
         }
-        catch(error){
-            toast.error(error.response.data.message);
+        catch(error){ 
+        const errorMessages = error.response?.data?.message;
+
+        if (errorMessages && typeof errorMessages === "object") {
+            
+            const allErrors = Object.values(errorMessages);
+            
+            const firstError = allErrors.find((arr) => Array.isArray(arr) && arr.length > 0)?.[0];
+
+            if (firstError) {
+                toast.error(firstError);
+            } else {
+                toast.error("An unexpected validation error occurred.");
+            }
+        } else {
+            toast.error(error.response?.data?.error || "Failed to log in. Please try again.");
+        }
         }
         finally{
             set({isLoggingIn: false});
@@ -82,7 +112,20 @@ export const useAuthStore = create((set, get) => ({
             toast.success("Profile updated");
         }
         catch(error){
-            toast.error(error.response.data.message);
+             const errorMessages = error.response?.data?.message;
+
+        if (errorMessages && typeof errorMessages === "object") {
+            const firstError = Object.values(errorMessages)
+                .find((arr) => Array.isArray(arr) && arr.length > 0)?.[0];
+
+            if (firstError) {
+                toast.error(firstError);
+            } else {
+                toast.error("An unexpected validation error occurred.");
+            }
+        } else {
+            toast.error(error.response?.data?.error || "Failed to update profile picture.");
+        }
         }
         finally{
             set({isUpdatingProfile: false});
