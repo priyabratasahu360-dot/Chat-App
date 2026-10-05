@@ -5,6 +5,8 @@ services:
     build: ./backend
     ports:
       - "5000:5000"
+    depends_on:
+      - redis
   
   frontend:
     build: ./frontend
@@ -12,3 +14,9 @@ services:
      - "5173:5173"
     depends_on:
       - backend
+
+  redis:
+    image: redis:7-alpine #lightweight image
+    ports:
+      - "6379:6379"
+    

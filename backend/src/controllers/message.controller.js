@@ -74,7 +74,7 @@ export const sendMessage = async(req, res) => {
             }
         })
 
-        const receiverSocketId = getReceiversSocketId(receiverId);
+        const receiverSocketId = await getReceiversSocketId(receiverId);
         if(receiverSocketId){
             io.to(receiverSocketId).emit("newMessage", newMessage);
         }
