@@ -2,8 +2,8 @@ import { create } from "zustand";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const NOTIFICATION_ENGINE_URL = "http://localhost:5001";
-const NOTIFICATION_WS_URL = "ws://localhost:5001";
+const NOTIFICATION_ENGINE_URL = "https://notification-engine-jts1.onrender.com";
+const NOTIFICATION_WS_URL = "wss://notification-engine-jts1.onrender.com";
 
 export const useNotificationStore = create((set, get) => ({
     notifications: [],
