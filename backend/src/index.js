@@ -24,6 +24,10 @@ app.use(cors({
     credentials: true
 }))
 
+//reads actual user's ip instead of render load balncer ip
+//always set it before all your endpoints
+app.set('trust proxy', 1);
+
 const PORT = process.env.PORT;
 
 app.use("/api/auth", authRoutes);
@@ -39,7 +43,7 @@ if(process.env.NODE_ENV === "production"){
 }
 
 
-server.listen(PORT, () => {
+server.listen(PORT, async() => {
+    await connectDb();
     console.log(`Server running on port ${PORT}`);
-    connectDb();
 });
