@@ -1,6 +1,6 @@
 export const emitNotificationEvent = async (eventPayload) => {
     try {
-        const NOTIFICATION_ENGINE_URL = process.env.NOTIFICATION_ENGINE_URL || "http://localhost:5001";
+        const NOTIFICATION_ENGINE_URL = process.env.NOTIFICATION_ENGINE_URL || "";
         const SERVICE_KEY = process.env.NOTIFICATION_SERVICE_KEY || "";
 
         const headers = {

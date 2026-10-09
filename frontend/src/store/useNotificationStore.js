@@ -46,6 +46,10 @@ export const useNotificationStore = create((set, get) => ({
 
         const ws = new WebSocket(`${NOTIFICATION_WS_URL}?userId=${userId}`);
 
+        ws.onopen = () => {
+            set({ws});
+        }
+
         ws.onmessage = (event) => {
             try{
                 const message = JSON.parse(event.data);
