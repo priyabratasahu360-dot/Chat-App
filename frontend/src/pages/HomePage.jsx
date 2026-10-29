@@ -4,6 +4,7 @@ import { Sidebar } from "../components/Sidebar";
 import { ChatContainer } from "../components/ChatContainer";
 import { useGroupChat } from "../store/useGroupChat";
 import { GroupChatContainer } from "../components/GroupChatsContainer";
+import CallUI from "../components/CallUI";
 
 export const HomePage = () => {
   const { selectedUser } = useChatStore();
@@ -59,6 +60,8 @@ export const HomePage = () => {
         </div>
 
       </div>
+      <CallUI />
+      <audio id="remote-audio" autoPlay />
     </div>
   );
 };

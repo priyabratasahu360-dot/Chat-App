@@ -1,10 +1,23 @@
 import { X, Phone, Settings } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
+import { startVoiceCall } from "../services/voiceCallService";
+import toast from "react-hot-toast";
 
 export const ChatHeader = () => {
   const { selectedUser, setSelectedUser } = useChatStore();
   const { onlineUser } = useAuthStore();
+
+  const handleVoiceCall = async() => {
+    if(!selectedUser?._id) return;
+    try{
+      await startVoiceCall(selectedUser._id);
+    }
+    catch(error){
+      console.log("Failed to start voice call", error);
+      toast.error(error.message || "Failed to start call");
+    }
+  }
 
   return (
     <div className="bg-[#c0c0c0] border-b-2 border-black p-2">
@@ -42,7 +55,11 @@ export const ChatHeader = () => {
 
         {/* Action Buttons */}
         <div className="flex gap-2">
-          <button className="w-7 h-7 flex items-center justify-center bg-[#c0c0c0] cursor-pointer text-black border-2 border-white border-r-black border-b-black active:border-black active:border-r-white active:border-b-white">
+          <button 
+          onClick={handleVoiceCall}
+          disabled={!selectedUser}
+          title="Start voice call"
+          className="w-7 h-7 flex items-center justify-center bg-[#c0c0c0] cursor-pointer text-black border-2 border-white border-r-black border-b-black active:border-black active:border-r-white active:border-b-white">
             <Phone className="size-4"/>
           </button>
 

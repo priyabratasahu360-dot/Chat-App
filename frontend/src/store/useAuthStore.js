@@ -2,6 +2,7 @@ import {create} from 'zustand';
 import { axiosInstance } from '../lib/axios';
 import toast from 'react-hot-toast';
 import {io} from 'socket.io-client';
+import { useCallStore } from './useCallStore';
 
 const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:5000": "/";
 
@@ -16,7 +17,7 @@ export const useAuthStore = create((set, get) => ({
 
     checkAuth: async() => {
         try{
-            const res = axiosInstance.get("/auth/check");
+            const res = await axiosInstance.get("/auth/check");
             set({authUser: res.data});
             get().connectSocket();
         }
@@ -144,6 +145,7 @@ export const useAuthStore = create((set, get) => ({
         socket.connect();
 
         set({socket: socket});
+        useCallStore.getState().initializeCallListeners();
 
         socket.on("getOnlineUsers", (userIds) => {
             set({onlineUser: userIds});

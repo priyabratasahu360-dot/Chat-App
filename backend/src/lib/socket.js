@@ -44,6 +44,86 @@ io.on("connection", async(socket) => {
         console.log(`User ${userId} left the group ${groupId}`);
     })
 
+    // Start a voice call
+    socket.on("call_user", async ({ receiverId, offer }) => {
+        try {
+            if (!userId || !receiverId || !offer || userId === receiverId) return;
+
+            const receiverSocketId = await getReceiversSocketId(receiverId);
+
+            if (!receiverSocketId) {
+                socket.emit("call_unavailable", { message: "User is offline" });
+                return;
+            }
+
+            io.to(receiverSocketId).emit("incoming_call", {
+                callerId: userId,
+                offer,
+            });
+        } catch (error) {
+            console.log("Call error", error);
+            socket.emit("call_error", { message: "Unable to make call" });
+        }
+    });
+
+    // Accept a voice call
+    socket.on("accept_call", async ({ callerId, answer }) => {
+        try {
+            if (!userId || !callerId || !answer) return;
+
+            const callerSocketId = await getReceiversSocketId(callerId);
+
+            if (!callerSocketId) {
+                socket.emit("call_unavailable", {
+                    message: "Caller is no longer connected",
+                });
+                return;
+            }
+
+            io.to(callerSocketId).emit("call_accepted", {
+                receiverId: userId,
+                answer,
+            });
+        } catch (error) {
+            console.log("Accept call error", error);
+        }
+    });
+
+    // Forward ICE candidates
+    socket.on("ice_candidate", async ({ targetUserId, candidate }) => {
+        try {
+            if (!userId || !targetUserId || !candidate) return;
+
+            const targetSocketId = await getReceiversSocketId(targetUserId);
+
+            if (targetSocketId) {
+                io.to(targetSocketId).emit("ice_candidate", {
+                    senderId: userId,
+                    candidate,
+                });
+            }
+        } catch (error) {
+            console.log("ICE signaling error", error);
+        }
+    });
+
+    // End a voice call
+    socket.on("end_call", async ({ targetUserId }) => {
+        try {
+            if (!userId || !targetUserId) return;
+
+            const targetSocketId = await getReceiversSocketId(targetUserId);
+
+            if (targetSocketId) {
+                io.to(targetSocketId).emit("call_ended", {
+                    senderId: userId,
+                });
+            }
+        } catch (error) {
+            console.log("End call error", error);
+        }
+    });
+
     socket.on("disconnect", async() => {
         console.log("A user disconnected", socket.id);
 
