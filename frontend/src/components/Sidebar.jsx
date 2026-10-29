@@ -9,6 +9,7 @@ import {
   Search,
   X,
   MessageSquare,
+  Phone
 } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useGroupChat } from "../store/useGroupChat";
@@ -170,24 +171,33 @@ export const Sidebar = () => {
             Groups
           </button>
 
+          <button 
+          onClick={() => {
+            setActiveTab("calls")
+          }}
+          className={`flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1 border-r border-gray-500 ${
+              activeTab === "calls"
+                ? "bg-white text-[#000080] border-t-2 border-t-white"
+                : "text-black hover:bg-[#d8d8d8]"
+            }`}>
+            <Phone className="size-3"/>
+            Calls
+          </button>
+
         </div>
 
         {/* =================================
                     SEARCH
                 ================================= */}
 
-        {activeTab !== "calls" && (
+        {activeTab && (
           <div className="p-2 border-b-2 border-gray-600">
             <div className="relative">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-4 text-gray-600" />
 
               <input
                 type="text"
-                placeholder={
-                  activeTab === "chats"
-                    ? "Search people..."
-                    : "Search groups..."
-                }
+                placeholder={`Search ${activeTab}...`}
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -335,6 +345,15 @@ export const Sidebar = () => {
                 <EmptyState text="No groups found" />
               )}
             </>
+          )}
+
+          {/* =================================
+                        CALL HISTORY TAB
+                    ================================= */}
+          {activeTab === "calls" && (
+            <div className="text-black">
+              Call History
+            </div>
           )}
           
         </div>

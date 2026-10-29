@@ -48,6 +48,9 @@ export const HomePage = () => {
             <GroupChatContainer />
           )}
 
+          {/* Call history */}
+          {}
+
           {/* Nothing Selected */}
           {!selectedUser && !selectedGroup && (
             <NoChatSelected/>
