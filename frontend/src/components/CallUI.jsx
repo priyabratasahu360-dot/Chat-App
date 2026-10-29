@@ -11,7 +11,9 @@ const CallUI = () => {
   const { callStatus, incomingCall, remoteUserId } = useCallStore();
   const {users} = useChatStore();
 
-  const caller = users.find((user) => user._id === incomingCall?.callerId)
+  const caller = users.find((user) => user._id === incomingCall?.callerId);
+  const receiver = users.find((user) => user._id === remoteUserId);
+
   if (callStatus === "idle") return null;
 
   const handleAccept = async () => {
@@ -34,7 +36,7 @@ const CallUI = () => {
 
   return (
     <div className="fixed bottom-5 right-5 z-50 w-80 border-2 border-black bg-[#c0c0c0] p-4 text-black shadow-xl">
-      <h2 className="mb-3 font-bold">
+      <h2 className="mb-2 font-bold">
         {isIncoming
           ? "Incoming voice call"
           : isOutgoing
@@ -51,8 +53,8 @@ const CallUI = () => {
       )}
 
       {!isIncoming && remoteUserId && (
-        <p className="mb-4 break-all text-xs">
-          User ID: {remoteUserId}
+        <p className="mb-4 break-all text-sm font-bold">
+          {receiver?.fullname.toUpperCase()}
         </p>
       )}
 

@@ -1,4 +1,4 @@
-import { LogOut, MessageSquare, Settings, User } from "lucide-react";
+import { LogOut, MessageSquare, Settings, User, Bell} from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Link } from "react-router-dom";
 export const Navbar = () => {
@@ -19,9 +19,9 @@ export const Navbar = () => {
               <div className="flex gap-1">
                 <Link
                   to="/notifications"
-                  className="flex items-center gap-2 bg-gray-600 text-black px-3 py-1.5 text-sm font-bold border-2 border-white border-r-black border-b-black active:border-black active:border-r-white active:border-b-white"
+                  className="flex items-center gap-2 bg-[#c0c0c0] text-black px-3 py-1.5 text-sm font-bold border-2 border-white border-r-black border-b-black active:border-black active:border-r-white active:border-b-white"
                 >
-                  🔔
+                  <Bell className="size-4"/>
                 </Link>
 
                 <Link
