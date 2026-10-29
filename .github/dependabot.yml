@@ -1,0 +1,12 @@
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    shedule: 
+     interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/backend"
+    shedule: 
+     interval: "weekly"
