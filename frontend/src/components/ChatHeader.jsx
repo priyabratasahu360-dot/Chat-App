@@ -10,10 +10,10 @@ export const ChatHeader = () => {
 
   const handleVoiceCall = async() => {
     if(!selectedUser?._id) return;
-    // const isOnline = onlineUser.includes(selectedUser._id);
-    // if(!isOnline){
-    //   return toast.error("You cant contact while user is offline");
-    // }
+    const isOnline = onlineUser.includes(selectedUser._id);
+    if(!isOnline){
+      return toast.error("You cant contact while user is offline");
+    }
     try{
       await startVoiceCall(selectedUser._id);
     }
